@@ -12,6 +12,8 @@
 
 namespace {
 
+const std::unordered_set<int32_t> EMPTY_SET = {};
+
 struct SaturationNode {
 public:
     int32_t id;
@@ -130,7 +132,7 @@ public:
 
     [[nodiscard]] inline const std::unordered_set<int32_t>& GetAdjacentVertices(int32_t vertex) const {
         if (adjacency_list_.find(vertex) == adjacency_list_.end()) {
-            return {};
+            return EMPTY_SET;
         }
 
         return adjacency_list_.at(vertex);
