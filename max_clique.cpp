@@ -542,8 +542,6 @@ double RoundTo(double value, double precision = 1.0) {
 } // namespace
 
 int main() {
-//    std::vector<std::string > files = { "brock200_3.clq" };
-
     std::vector<std::string> files = { "brock200_1.clq", "brock200_2.clq", "brock200_3.clq", "brock200_4.clq",
                                        "brock400_1.clq", "brock400_2.clq", "brock400_3.clq", "brock400_4.clq",
                                        "C125.9.clq",
@@ -557,7 +555,6 @@ int main() {
                                        "p_hat300-3.clq", "p_hat500-3.clq",
                                        "san1000.clq",
                                        "sanr200_0.9.clq", "sanr400_0.7.clq"
-//                                       "MANN_a45.clq"
     };
 
     std::ofstream fout("clique.csv");
