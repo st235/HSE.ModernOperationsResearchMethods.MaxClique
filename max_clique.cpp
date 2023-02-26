@@ -14,7 +14,7 @@
 
 namespace {
 
-const std::unordered_set<int32_t> EMPTY_SET = {};
+const std::unordered_set<int32_t> kEmptySet = {};
 
 struct SaturationNode {
 public:
@@ -134,7 +134,7 @@ public:
 
     [[nodiscard]] inline const std::unordered_set<int32_t>& GetAdjacentVertices(int32_t vertex) const {
         if (adjacency_list_.find(vertex) == adjacency_list_.end()) {
-            return EMPTY_SET;
+            return kEmptySet;
         }
 
         return adjacency_list_.at(vertex);
@@ -320,7 +320,7 @@ class Clique {
 private:
     Graph* graph_;
 
-        std::vector<int32_t> vertices_;
+    std::vector<int32_t> vertices_;
     std::unordered_set<int32_t> vertices_lookup_;
 
     std::unordered_set<int32_t> candidates_;
@@ -345,11 +345,11 @@ public:
     Clique(const Clique& that) = default;
     Clique& operator=(const Clique& that) = default;
 
-    [[nodiscard]] inline const std::vector<int32_t> GetVertices() const {
+    [[nodiscard]] inline std::vector<int32_t> GetVertices() const {
         return vertices_;
     }
 
-    [[nodiscard]] inline const std::unordered_set<int32_t> GetCandidates() const {
+    [[nodiscard]] inline std::unordered_set<int32_t> GetCandidates() const {
         return candidates_;
     }
 
@@ -465,8 +465,8 @@ public:
     MaxCliqueProblem(MaxCliqueProblem&& that) = default;
     MaxCliqueProblem& operator=(MaxCliqueProblem&& that) = default;
 
-    [[nodiscard]] inline size_t GetBestCliqueSize() const {
-        return best_clique_->Size();
+    [[nodiscard]] inline std::vector<int32_t> GetBestClique() const {
+        return best_clique_->GetVertices();
     }
 
     [[nodiscard]] inline bool IsCliqueValid() const {
@@ -501,7 +501,6 @@ public:
             std::unordered_set<int32_t> vertices_to_remove;
             vertices_to_remove.insert(GenerateInRange(0, static_cast<int32_t>(clique_vertices.size()) - 1));
 
-//            int32_t max_amount_to_remove = std::min(2, static_cast<int32_t>(new_clique->CandidatesSize()));
             int32_t max_amount_to_remove = std::max(1, static_cast<int32_t>(new_clique->Size() * 0.7));
 
             // Starts from 1 as we already removed one.
@@ -541,6 +540,20 @@ double RoundTo(double value, double precision = 1.0) {
     return std::round(value / precision) * precision;
 }
 
+template<typename T>
+std::string ConvertToString(
+        const std::vector<T>& collection,
+        const std::string& delimiter = " ") {
+    std::ostringstream os;
+    for (size_t i = 0; i < collection.size(); i++) {
+        os << collection[i];
+        if (i != collection.size() -1 ) {
+            os << delimiter;
+        }
+    }
+    return os.str();
+}
+
 } // namespace
 
 int main() {
@@ -566,7 +579,7 @@ int main() {
               << std::setfill(' ') << std::setw(15) << "Time, sec"
               << std::endl;
 
-    fout << "File; Clique; Time (sec)\n";
+    fout << "File; Clique; Time (sec); Clique vertices" << std::endl;
     for(const auto& file: files) {
         MaxCliqueProblem problem = MaxCliqueProblem::FromFile("data/" + file);
         clock_t start = clock();
@@ -583,10 +596,16 @@ int main() {
             continue;
         }
 
-        fout << file << "; " << problem.GetBestCliqueSize() << "; " << double(clock() - start) / CLOCKS_PER_SEC << '\n';
+        const auto& best_clique = problem.GetBestClique();
+
+        fout << file << "; "
+             << best_clique.size() << "; "
+             << double(clock() - start) / CLOCKS_PER_SEC << "; "
+             << ConvertToString(best_clique, ", ")
+             << std::endl;
 
         std::cout << std::setfill(' ') << std::setw(20) << file
-                  << std::setfill(' ') << std::setw(10) << problem.GetBestCliqueSize()
+                  << std::setfill(' ') << std::setw(10) << best_clique.size()
                   << std::setfill(' ') << std::setw(15) << seconds_diff
                   << std::endl;
     }
